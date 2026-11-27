@@ -8,8 +8,7 @@ import matplotlib as mpl
 from matplotlib.figure import Figure
 import pytest
 
-from mpl2pptx.namespaces import NS
-from mpl2pptx.svg import text as svg_text
+from mpl2pptx.namespaces import NS, child, qname
 from mpl2pptx.svg.prepare import Dash, Hatch, prepare_svg
 from mpl2pptx.svg.text import Label
 
@@ -19,10 +18,17 @@ def svg(content, defs=""):
                          f'<defs>{defs}</defs>{content}</svg>')
 
 
+def math_run(mathml):
+    """Supply a native run so these SVG tests need neither conversion backend."""
+    math = ET.Element(qname("m:oMath"))
+    child(child(math, "m:r"), "m:t").text = "".join(mathml.itertext())
+    return math
+
+
 def test_svg_font_shorthand_and_alignment():
     root = svg('''<g><text style="font: italic 700 14px 'DejaVu Sans'; text-anchor:end"
                    x="100" y="20" fill="#123456">Reading</text></g>''')
-    _, _, slots = prepare_svg(root)
+    _, _, slots = prepare_svg(root, mathml_to_omml=pytest.fail)
     label, = slots.values()
     assert isinstance(label, Label)
     assert (label.content.source, label.family, label.size) == ("Reading", "DejaVu Sans", 14)
@@ -30,9 +36,7 @@ def test_svg_font_shorthand_and_alignment():
 
 
 @pytest.mark.parametrize("fonttype", ["path", "none"])
-def test_mixed_runs_and_literal_dollars(fonttype, monkeypatch):
-    # Isolate SVG recovery here. The public conversion tests exercise real Office Math.
-    monkeypatch.setattr(svg_text, "office_equation", lambda *args: ET.Element(f'{{{NS["m"]}}}oMath'))
+def test_mixed_runs_and_literal_dollars(fonttype):
     cases = [
         (r"$\frac{a}{b}$ with $c$", True, ("", r"\frac{a}{b}", " with ", "c", "")),
         (r"$x$ costs \$5", True, ("", "x", " costs $5")),
@@ -48,20 +52,19 @@ def test_mixed_runs_and_literal_dollars(fonttype, monkeypatch):
     with mpl.rc_context({"svg.fonttype": fonttype}):
         figure.savefig(buffer, format="svg")
     detected = Counter()
-    _, _, slots = prepare_svg(ET.fromstring(buffer.getvalue()), detected=detected)
+    _, _, slots = prepare_svg(ET.fromstring(buffer.getvalue()), detected=detected, mathml_to_omml=math_run)
     assert [label.content.parts for label in slots.values()] == [parts for _, _, parts in cases]
     assert detected == {"text": 5, "equations": 5}
     assert all(label.family == "DejaVu Sans" and label.bold for label in slots.values() if label.content.has_text)
 
 
 @pytest.mark.parametrize("fonttype", ["path", "none"])
-def test_failed_inline_formula_keeps_entire_source_line(fonttype, monkeypatch):
-    def convert(latex, *args):
-        if latex == "y":
+def test_failed_inline_formula_keeps_entire_source_line(fonttype):
+    def convert(mathml):
+        if "".join(mathml.itertext()) == "y":
             raise ValueError("unsupported formula")
-        return ET.Element(f'{{{NS["m"]}}}oMath')
+        return math_run(mathml)
 
-    monkeypatch.setattr(svg_text, "office_equation", convert)
     fig = Figure(figsize=(3, 1))
     fig.text(.1, .5, r"Compare $x$ and $y$")
     buf = BytesIO()
@@ -72,7 +75,7 @@ def test_failed_inline_formula_keeps_entire_source_line(fonttype, monkeypatch):
     original = ET.tostring(group)
     detected = Counter()
     with pytest.warns(UserWarning, match="unsupported formula"):
-        _, _, slots = prepare_svg(root, detected=detected)
+        _, _, slots = prepare_svg(root, detected=detected, mathml_to_omml=convert)
     assert not slots and ET.tostring(group) == original
     assert detected == {"text": 1, "equations": 2}
 
@@ -88,13 +91,14 @@ def test_matplotlib_pattern_directions(code, preset):
     buf = BytesIO()
     fig.savefig(buf, format="svg")
     root = ET.fromstring(buf.getvalue())
-    hatch, = (v for v in prepare_svg(root)[2].values() if isinstance(v, Hatch))
+    _, _, slots = prepare_svg(root, mathml_to_omml=pytest.fail)
+    hatch, = (v for v in slots.values() if isinstance(v, Hatch))
     assert (hatch.preset, hatch.foreground, hatch.background) == (preset, ("203355", 1), ("EEF4FF", 1))
 
 
 def test_odd_dash_array_and_reserved_color():
     root = svg('<path d="M0 0 L80 40" stroke="#c41379" fill="none" stroke-width="2" stroke-dasharray="4 1 2"/>')
-    _, _, slots = prepare_svg(root)
+    _, _, slots = prepare_svg(root, mathml_to_omml=pytest.fail)
     key, = slots
     assert key != "C41379"
     assert slots[key] == Dash("C41379", (2.0, 0.5, 1.0, 2.0, 0.5, 1.0))
@@ -113,7 +117,7 @@ def test_label_without_source_comment_preserves_glyphs(source, fonttype):
     group = root.xpath("//*[@id='text_1']")[0]
     before = ET.tostring(group)
     with pytest.warns(UserWarning, match="Matplotlib"):
-        _, _, slots = prepare_svg(root)
+        _, _, slots = prepare_svg(root, mathml_to_omml=pytest.fail)
     assert not slots and ET.tostring(group) == before
 
 
@@ -126,6 +130,6 @@ def test_report_detects_unsupported_hatch_before_preparation():
     fig.savefig(buf, format="svg")
     detected = Counter()
     with pytest.warns(UserWarning, match="填充图案"):
-        _, _, slots = prepare_svg(ET.fromstring(buf.getvalue()), detected=detected)
+        _, _, slots = prepare_svg(ET.fromstring(buf.getvalue()), detected=detected, mathml_to_omml=pytest.fail)
     assert detected == {"hatches": 2}
     assert not any(isinstance(v, Hatch) for v in slots.values())

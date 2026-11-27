@@ -5,7 +5,7 @@ from zipfile import ZipFile
 from lxml import etree as ET
 
 from mpl2pptx.namespaces import child, qname
-from mpl2pptx.pptx.powerpoint import restore_editable_shapes
+from mpl2pptx.pptx.restore import restore_editable_shapes
 from mpl2pptx.pptx.writer import solid, write_package
 from mpl2pptx.report import ConversionStats
 from mpl2pptx.svg.prepare import Dash, Hatch

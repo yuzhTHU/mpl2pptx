@@ -10,6 +10,7 @@ ELEMENT_NAMES = {"text": "文字", "equations": "公式", "hatches": "图案填�
 
 class ConversionStats:
     def __init__(self):
+        self.backend = None
         self.detected = Counter()
         self.converted = Counter()
         self.figures = self.shapes = self.pictures = 0
@@ -25,6 +26,6 @@ class ConversionStats:
         elements = {kind: {"detected": self.detected[kind], "converted": self.converted[kind]}
                     for kind in ELEMENT_NAMES}
         detected, converted = sum(self.detected.values()), sum(self.converted.values())
-        return {"output": output, "version": version, "figures": self.figures,
+        return {"output": output, "version": version, "backend": self.backend, "figures": self.figures,
                 "shapes": self.shapes, "pictures": self.pictures, "elements": elements,
                 "detected": detected, "converted": converted, "unconverted": detected - converted}

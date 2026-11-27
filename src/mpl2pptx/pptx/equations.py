@@ -1,29 +1,13 @@
 """Convert Matplotlib mathtext to native Office Math through MathML."""
 
-import os
 import re
-from functools import lru_cache
-from pathlib import Path
 
 from lxml import etree as ET
 
 from ..namespaces import DRAWINGML, OFFICE_MATH
 
 
-@lru_cache(maxsize=1)
-def office_math_transform():
-    for env in ("ProgramW6432", "ProgramFiles", "ProgramFiles(x86)"):
-        base = os.environ.get(env)
-        if not base:
-            continue
-        office = Path(base) / "Microsoft Office"
-        for folder in (office / "root", office):
-            for xsl in sorted(folder.glob("Office*/MML2OMML.XSL"), reverse=True):
-                return ET.XSLT(ET.parse(str(xsl)))
-    raise FileNotFoundError("找不到桌面版 Office 的 MML2OMML.XSL。")
-
-
-def office_equation(latex, size, rgb, alpha):
+def office_equation(latex, size, rgb, alpha, mathml_to_omml):
     from latex2mathml.converter import convert
 
     try:
@@ -35,7 +19,7 @@ def office_equation(latex, size, rgb, alpha):
     for identifier in mathml.iter("{http://www.w3.org/1998/Math/MathML}mi"):
         if re.fullmatch(r"\\[A-Za-z]+", identifier.text or ""):
             raise ValueError(f"不能将数学命令 {identifier.text} 转为 Office 公式")
-    math = office_math_transform()(mathml).getroot()
+    math = mathml_to_omml(mathml)
     if math is None or math.tag != OFFICE_MATH + "oMath" or math.find(".//" + OFFICE_MATH + "r/" + OFFICE_MATH + "t") is None:
         raise ValueError("Office 未能识别这个数学表达式。")
     for run in math.iter(OFFICE_MATH + "r"):

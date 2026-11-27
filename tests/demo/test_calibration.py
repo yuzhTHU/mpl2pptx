@@ -62,8 +62,8 @@ def check(drawing):
     assert not drawing.find(".//p:pic")
 
 
-def test_calibration(office_output):
-    run_demo("calibration", make_figure, check, office_output)
+def test_calibration(conversion_output):
+    run_demo("calibration", make_figure, check, conversion_output)
 
 
 if __name__ == "__main__":

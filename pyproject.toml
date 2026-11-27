@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{name = "YuMeow"}]
-classifiers = ["Operating System :: Microsoft :: Windows"]
+classifiers = ["Operating System :: Microsoft :: Windows", "Operating System :: POSIX :: Linux"]
 dependencies = ["matplotlib>=3.8", "fonttools>=4", "lxml>=5", "latex2mathml>=3.78"]
 
 [project.urls]
@@ -18,8 +18,9 @@ Repository = "https://github.com/yuzhTHU/mpl2pptx"
 Issues = "https://github.com/yuzhTHU/mpl2pptx/issues"
 
 [project.optional-dependencies]
-examples = ["numpy", "seaborn>=0.13.2", "scipy"]
-test = ["pytest>=8"]
+portable = ["svgslide>=0.2.1,<0.3", "mathml2omml>=0.0.2,<0.1"]
+dev = ["numpy", "seaborn>=0.13.2", "scipy", "pytest>=8"]
+all = ["mpl2pptx[portable,dev]"]
 
 [project.scripts]
 mpl2pptx = "mpl2pptx.cli:main"
@@ -41,4 +42,7 @@ version = {attr = "mpl2pptx.__version__"}
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-markers = ["office: integration test using desktop PowerPoint on Windows"]
+markers = [
+    "integration: end-to-end SVG or Figure conversion using the installed backend",
+    "office: integration test using desktop PowerPoint on Windows",
+]

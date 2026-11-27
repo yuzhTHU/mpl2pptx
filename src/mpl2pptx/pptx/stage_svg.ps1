@@ -1,4 +1,5 @@
 $ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 # SVGEdit targets the active window. Serialize concurrent conversions in this
 # desktop session before opening a window or changing the active selection.
 $gate = [Threading.Mutex]::new($false, 'Local\mpl2pptx.SVGEdit')
@@ -37,6 +38,9 @@ try {
         }
     } while ($found)
     $presentation.SaveAs($env:MPL_FIGURE_STAGE, 24)
+} catch {
+    [Console]::Error.WriteLine($_.Exception.Message)
+    exit 1
 } finally {
     try {
         if ($null -ne $presentation) {

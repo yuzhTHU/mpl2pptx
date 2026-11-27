@@ -64,8 +64,8 @@ def check(drawing):
     assert pattern.find("a:bgClr/a:srgbClr", NS).get("val") == "F4E8D3"
 
 
-def test_bar_styles(office_output):
-    run_demo("bar_styles", make_figure, check, office_output)
+def test_bar_styles(conversion_output):
+    run_demo("bar_styles", make_figure, check, conversion_output)
 
 
 if __name__ == "__main__":

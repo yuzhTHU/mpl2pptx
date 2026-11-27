@@ -50,8 +50,8 @@ def check(drawing):
     assert not drawing.svg.findall(".//s:text", NS)  # labels were restored from Matplotlib comments
 
 
-def test_distributions(office_output):
-    run_demo("distributions", make_figure, check, office_output, fonttype="path")
+def test_distributions(conversion_output):
+    run_demo("distributions", make_figure, check, conversion_output, fonttype="path")
 
 
 if __name__ == "__main__":

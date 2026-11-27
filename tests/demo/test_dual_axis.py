@@ -1,6 +1,10 @@
 """Chinese characters, a second logarithmic Y axis, and native Office Math."""
 from unicodedata import normalize
+from matplotlib import font_manager
 from demo_support import NS, demo_cli, run_demo
+
+
+CJK_FAMILIES = ("Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK JP")
 
 
 def make_figure():
@@ -8,6 +12,8 @@ def make_figure():
     import numpy as np
     import matplotlib.pyplot as plt
 
+    installed = set(font_manager.get_font_names())
+    family = next((name for name in CJK_FAMILIES if name in installed), "Microsoft YaHei")
     fig, ax = plt.subplots(1, 1, figsize=(11, 6.1), dpi=300)
     ax2 = ax.twinx()
 
@@ -19,25 +25,27 @@ def make_figure():
     amp, = ax2.plot(t, amplitude, lw=1.8, color="#546de5", ls="--", label="振幅")
     
     ax.set_ylim(20, 72)
-    ax.set_ylabel("温度 (°C)", fontfamily="Microsoft YaHei", fontsize=11)
+    ax.set_ylabel("温度 (°C)", fontfamily=family, fontsize=11)
     ax.tick_params(axis="y", colors="#c44569")
 
     ax2.set_yscale("log")
     ax2.set_ylim(0.7, 150)
-    ax2.set_ylabel("振幅 (mV)", fontfamily="Microsoft YaHei", fontsize=11)
+    ax2.set_ylabel("振幅 (mV)", fontfamily=family, fontsize=11)
     ax2.tick_params(axis="y", colors="#546de5")
     
     ax.set_xlim(0, 12)
-    ax.set_xlabel("冷却时间（分钟）", fontfamily="Microsoft YaHei", fontsize=11)
-    ax.set_title(r"冷却响应 $A(t)=A_0 e^{-t/\tau}$", fontfamily="Microsoft YaHei", fontsize=14, fontweight="bold")
+    ax.set_xlabel("冷却时间（分钟）", fontfamily=family, fontsize=11)
+    ax.set_title(r"冷却响应 $A(t)=A_0 e^{-t/\tau}$", fontfamily=family, fontsize=14, fontweight="bold")
     ax.grid(axis="y", color="#D7DEE0", linewidth=0.6)
     ax.legend(handles=[temp, amp], loc="upper right", frameon=False,
-              prop={"family": "Microsoft YaHei", "size": 11})
+              prop={"family": family, "size": 11})
     ax.text(0.48, 0.55, r"$A(t)=A_0 e^{-t/\tau}$", transform=ax.transAxes, fontsize=14)
 
     return fig
 
 def check(drawing):
+    source, = drawing.svg.xpath("//s:text[text()='冷却时间（分钟）']", namespaces=NS)
+    family = next(name for name in CJK_FAMILIES if any(name in v for v in source.attrib.values()))
     title = drawing.text("冷却响应 ")
     for box, size, bold in [
         (title, "1400", "1"),
@@ -45,7 +53,7 @@ def check(drawing):
     ]:
         style = box.find("p:txBody/a:p/a:r/a:rPr", NS)
         assert (style.get("sz"), style.get("b")) == (size, bold)
-        assert style.find("a:ea", NS).get("typeface") == "Microsoft YaHei"
+        assert style.find("a:ea", NS).get("typeface") == family
     inline, = title.xpath("p:txBody/a:p/a14:m/m:oMath", namespaces=NS)
     assert inline.find(".//m:sSup", NS) is not None and inline.find(".//m:sSub", NS) is not None
     assert "τ" in normalize("NFKC", "".join(inline.xpath(".//m:t/text()", namespaces=NS)))
@@ -62,8 +70,8 @@ def check(drawing):
     assert drawing.stroked("c44569") and drawing.stroked("546de5")
 
 
-def test_dual_axis(office_output):
-    run_demo("dual_axis", make_figure, check, office_output)
+def test_dual_axis(conversion_output):
+    run_demo("dual_axis", make_figure, check, conversion_output)
 
 
 if __name__ == "__main__":

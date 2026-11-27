@@ -132,7 +132,7 @@ def mark_dashes(root, available, detected):
     return slots
 
 
-def prepare_svg(root, canvas=None, *, detected=None):
+def prepare_svg(root, canvas=None, *, mathml_to_omml, detected=None):
     """Mark slots in a temporary SVG, retaining geometry, clipping and stacking order."""
     w, h, viewport = canvas if canvas is not None else figure_viewport(root)
     available = slot_colors(root)
@@ -152,7 +152,7 @@ def prepare_svg(root, canvas=None, *, detected=None):
         content = label_content(node)
         content.count_features(detected)
         try:
-            label, x, y, local_size = read_label(node, viewport, content)
+            label, x, y, local_size = read_label(node, viewport, content, mathml_to_omml)
         except (ValueError, KeyError) as exc:
             warnings.warn(f"{group.get('id', 'text')}: {exc}，保留 SVG 原有图形。", stacklevel=2)
             continue

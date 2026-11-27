@@ -231,7 +231,7 @@ def group_font(node, content):
     return outline_face(face)[0], TEXT_PATH.FONT_SCALE
 
 
-def read_label(node, viewport, content):
+def read_label(node, viewport, content, mathml_to_omml):
     group = node.getparent()
     if not content.source:
         raise ValueError("没有文字节点或 Matplotlib 的原文注释")
@@ -272,7 +272,7 @@ def read_label(node, viewport, content):
     rgba = colors.to_rgba(style.get("fill", "black"))
     rgb = colors.to_hex(rgba)[1:].upper()
     alpha = style["opacity"] * float(style.get("fill-opacity", 1)) * rgba[3]
-    equations = tuple(office_equation(latex, size, rgb, alpha) for latex in content.parts[1::2])
+    equations = tuple(office_equation(latex, size, rgb, alpha, mathml_to_omml) for latex in content.parts[1::2])
     label = Label(content, frame, size, family, bold, italic, rgb, alpha,
                   align, valign, math.degrees(theta), equations)
     return label, x, y, local_size

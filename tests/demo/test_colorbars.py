@@ -82,8 +82,8 @@ def check(drawing):
     assert right > position(field)[0] + int(field.find("p:spPr/a:xfrm/a:ext", NS).get("cx"))
 
 
-def test_colorbars(office_output):
-    run_demo("colorbars", make_figure, check, office_output)
+def test_colorbars(conversion_output):
+    run_demo("colorbars", make_figure, check, conversion_output)
 
 
 if __name__ == "__main__":
