@@ -9,7 +9,13 @@ description = "Convert Matplotlib SVG figures into editable PowerPoint drawings"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
+authors = [{name = "YuMeow"}]
+classifiers = ["Operating System :: Microsoft :: Windows"]
 dependencies = ["matplotlib>=3.8", "fonttools>=4", "lxml>=5", "latex2mathml>=3.78"]
+
+[project.urls]
+Repository = "https://github.com/yuzhTHU/mpl2pptx"
+Issues = "https://github.com/yuzhTHU/mpl2pptx/issues"
 
 [project.optional-dependencies]
 examples = ["numpy", "seaborn>=0.13.2", "scipy"]

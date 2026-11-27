@@ -11,45 +11,45 @@
 | 普通文字 | 标题、刻度和图例等可转为文本框，保留字体、字号、字重、水平/垂直对齐方式（SVG 缺少对齐信息时按位置推断）。 |
 | 矢量图形 | 散点可逐个选中，曲线可调整顶点。网格、柱形、箱体和小提琴轮廓均可作为形状编辑。 |
 | 填充与边框 | 沿用 SVG 中的颜色和透明度；对于虚线，可保留段长和间隔。 |
-| 栅格图层 | `imshow` 和已栅格化的散点、色条（`rasterized=False`）保留为图片。[Matplotlib 栅格化说明](https://matplotlib.org/stable/gallery/misc/rasterization_demo.html) |
+| 栅格图层 | `imshow` 和已栅格化的散点、色条（`rasterized=True`）保留为图片。[Matplotlib 栅格化说明](https://matplotlib.org/stable/gallery/misc/rasterization_demo.html) |
 | 数学公式 | `$...$` 数学公式可转换为可编辑的 PPTX 公式，支持独立公式和行内公式。本功能依赖于 Matplotlib 导出为 SVG 时的公式源码注释。[Office 行内公式说明](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-odrawxml/cdafda97-9124-48ed-8d64-7f1dd9197c8a) |
 | 图案填充 | 横线、竖线、斜线和交叉线等 hatch 转换为 Office 预设的图案填充；圆点、星形等其他图案的 hatch 可能丢失。[Matplotlib 填充图案说明](https://matplotlib.org/stable/gallery/shapes_and_collections/hatch_style_reference.html) |
 | 页面尺寸 | 沿用 SVG 的物理宽高，每边支持 2.54 至 142.24 cm。[Office 页面尺寸说明](https://support.microsoft.com/en-us/powerpoint/change-the-size-of-your-powerpoint-slides) |
 
-> 如果在您的 SVG 上表现异常，可以提交 GitHub Issue
+> 如果在您的 SVG 上表现异常，可以提交 [GitHub Issue](https://github.com/yuzhTHU/mpl2pptx/issues)。
 
 ## 示例
 
-**校准曲线与残差** | [绘图脚本](tests/demo/test_calibration.py) · [保存的 SVG](assets/examples/calibration.svg) · [可编辑 PPTX](assets/examples/calibration.pptx)
+**校准曲线与残差** | [绘图脚本](https://github.com/yuzhTHU/mpl2pptx/blob/main/tests/demo/test_calibration.py) · [保存的 SVG](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/calibration.svg) · [可编辑 PPTX](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/calibration.pptx)
 
-![左图显示传感器观测点和拟合线，右图显示残差散点](assets/examples/calibration.png)
+![左图显示传感器观测点和拟合线，右图显示残差散点](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/calibration.png)
 
-**箱线图与小提琴图** | [绘图脚本](tests/demo/test_distributions.py) · [保存的 SVG](assets/examples/distributions.svg) · [可编辑 PPTX](assets/examples/distributions.pptx)
+**箱线图与小提琴图** | [绘图脚本](https://github.com/yuzhTHU/mpl2pptx/blob/main/tests/demo/test_distributions.py) · [保存的 SVG](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/distributions.svg) · [可编辑 PPTX](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/distributions.pptx)
 
-![三种处理模式的延迟分布，左侧为箱线图，右侧为小提琴图](assets/examples/distributions.png)
+![三种处理模式的延迟分布，左侧为箱线图，右侧为小提琴图](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/distributions.png)
 
-**柱形的填充与边框** | [绘图脚本](tests/demo/test_bar_styles.py) · [保存的 SVG](assets/examples/bar_styles.svg) · [可编辑 PPTX](assets/examples/bar_styles.pptx)
+**柱形的填充与边框** | [绘图脚本](https://github.com/yuzhTHU/mpl2pptx/blob/main/tests/demo/test_bar_styles.py) · [保存的 SVG](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/bar_styles.svg) · [可编辑 PPTX](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/bar_styles.pptx)
 
-![四根柱子分别使用实线边框、纯色填充、半透明虚线边框和斜线图案](assets/examples/bar_styles.png)
+![四根柱子分别使用实线边框、纯色填充、半透明虚线边框和斜线图案](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/bar_styles.png)
 
-**线性与对数双 Y 轴** | [绘图脚本](tests/demo/test_dual_axis.py) · [保存的 SVG](assets/examples/dual_axis.svg) · [可编辑 PPTX](assets/examples/dual_axis.pptx)
+**线性与对数双 Y 轴** | [绘图脚本](https://github.com/yuzhTHU/mpl2pptx/blob/main/tests/demo/test_dual_axis.py) · [保存的 SVG](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/dual_axis.svg) · [可编辑 PPTX](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/dual_axis.pptx)
 
-![冷却曲线共用时间轴，标题中的中文与衰减公式可在同一文本框中编辑](assets/examples/dual_axis.png)
+![冷却曲线共用时间轴，标题中的中文与衰减公式可在同一文本框中编辑](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/dual_axis.png)
 
-**连续与离散色条** | [绘图脚本](tests/demo/test_colorbars.py) · [保存的 SVG](assets/examples/colorbars.svg) · [可编辑 PPTX](assets/examples/colorbars.pptx)
+**连续与离散色条** | [绘图脚本](https://github.com/yuzhTHU/mpl2pptx/blob/main/tests/demo/test_colorbars.py) · [保存的 SVG](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/colorbars.svg) · [可编辑 PPTX](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/colorbars.pptx)
 
-![连续信号场配右侧色条，分类网格配上方四色色条](assets/examples/colorbars.png)
+![连续信号场配右侧色条，分类网格配上方四色色条](https://raw.githubusercontent.com/yuzhTHU/mpl2pptx/main/assets/examples/colorbars.png)
 
 
 ## 安装
 
-通过下述指令安装以使用：
+转换需要 Windows 和桌面版 PowerPoint 2024。可用下面的命令从 PyPI 安装。
 
 ```powershell
-python -m pip install .
+python -m pip install mpl2pptx
 ```
 
-也可使用下述指令以开发、运行示例和测试：
+在仓库根目录运行以下命令可安装示例和测试所需的依赖。
 
 ```powershell
 python -m pip install -e ".[examples,test]"
