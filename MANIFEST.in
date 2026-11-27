@@ -1,0 +1,4 @@
+recursive-include tests *.py
+recursive-include assets/examples *.svg *.pptx *.png
+include conftest.py requirements.txt
+prune playground

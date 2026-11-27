@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mpl2pptx"
+dynamic = ["version"]
+description = "Convert Matplotlib SVG figures into editable PowerPoint drawings"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = ["matplotlib>=3.8", "fonttools>=4", "lxml>=5", "latex2mathml>=3.78"]
+
+[project.optional-dependencies]
+examples = ["numpy", "seaborn>=0.13.2", "scipy"]
+test = ["pytest>=8"]
+
+[project.scripts]
+mpl2pptx = "mpl2pptx.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mpl2pptx", "mpl2pptx.*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+"mpl2pptx.pptx" = ["stage_svg.ps1"]
+
+[tool.setuptools.dynamic]
+version = {attr = "mpl2pptx.__version__"}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["office: integration test using desktop PowerPoint on Windows"]
